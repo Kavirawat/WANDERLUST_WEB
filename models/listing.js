@@ -34,5 +34,12 @@ listingSchema.post("findOndAndDelete", async (listing) => {
   }
 });
 
+listingSchema.get({
+  title: "text",
+  description: "text",
+  location: "text",
+  owner: "text",
+});
+
 const Listing = mongoose.model("Listing", listingSchema);
 module.exports = Listing;

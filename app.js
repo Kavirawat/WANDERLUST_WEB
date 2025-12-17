@@ -1,4 +1,4 @@
-if (process.env_NODE_ENV != "production") {
+if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
@@ -19,6 +19,7 @@ const User = require("./models/user.js");
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
+const Listing = require("./models/listing.js");
 
 const dbUrl = process.env.ATLASDB_URL;
 
@@ -49,7 +50,7 @@ const store = mongoStore.create({
   touchAfter: 24 * 3600,
 });
 
-store.on("error", () => {
+store.on("error", (err) => {
   console.log("ERROR IN MONGO SESSION STORE", err);
 });
 
@@ -57,17 +58,13 @@ const sessionOpt = {
   store,
   secret: process.env.SECRET,
   resave: false,
-  saveUninitialized: true,
-  Cookie: {
+  saveUninitialized: false,
+  cookie: {
     expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-    maxge: 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
   },
-  httpOnly: true,
 };
-
-// app.get("/", (req, res) => {
-//   res.send("Hi i am kavir rawat");
-// });
 
 app.use(session(sessionOpt));
 app.use(flash());
@@ -94,6 +91,31 @@ app.use((req, res, next) => {
 //   let registeredUser = await User.register(fakeUser, "Helloworld");
 //   res.send(registeredUser);
 // });
+
+//searching filter
+app.get("/search", async (req, res) => {
+  const { q } = req.query;
+
+  try {
+    const listings = await Listing.find({
+      $or: [
+        { title: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } },
+        { location: { $regex: q, $options: "i" } },
+      ],
+    });
+
+    if (listings.length === 0) {
+      req.flash("error", "No listings found!");
+      return res.redirect("/listings");
+    }
+
+    res.render("listings/index.ejs", { allListings: listings });
+  } catch (err) {
+    req.flash("error", "Search failed!");
+    res.redirect("/listings");
+  }
+});
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
