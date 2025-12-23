@@ -5,28 +5,32 @@
   <div class="col-6 offset-3 mt-2">
     <form action="/login" method="post" class="needs-validation" novalidate>
       <div class="mb-4">
-        <label for="username" class="form-label">Username</label>
+        <label class="form-label">Username</label>
         <input
           name="username"
           type="text"
           placeholder="Enter Username"
           class="form-control"
-          id="username"
           required
         />
       </div>
+
       <div class="mb-4">
-        <label for="password" class="form-label">Password</label>
+        <label class="form-label">Password</label>
         <input
           name="password"
           type="password"
           placeholder="Enter Password"
           class="form-control"
-          id="password"
           required
         />
       </div>
-      <button class="btn btn-success">Login</button>
+
+      <button class="btn btn-success mb-2">Login</button>
+
+      <p class="mt-2">
+        <a href="/forgot">Forgot Password?</a>
+      </p>
     </form>
   </div>
 </div>

@@ -10,7 +10,7 @@ const {
 
 const reviewController = require("../controllers/reviews.js");
 
-//Delete Review Route
+//============================= Delete Review Route =========================================
 router.delete(
   "/:reviewId",
   isloggedIn,
@@ -18,7 +18,7 @@ router.delete(
   wrapAsync(reviewController.destroyReview)
 );
 
-//Review Route -> Post Review Route
+//============================= Review Route -> Post Review Route ============================
 router.post(
   "/",
   isloggedIn,

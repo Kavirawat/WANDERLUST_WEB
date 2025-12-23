@@ -18,7 +18,7 @@ router
     wrapAsync(listingController.createListing)
   );
 
-//New Route
+//============================================ New Route =================================
 router.get("/new", isloggedIn, listingController.renderNewForm);
 
 router
@@ -33,7 +33,7 @@ router
   )
   .get(wrapAsync(listingController.showListing));
 
-//Edit Route
+//=========================================== Edit Route ===================================
 router.get(
   "/:id/edit",
   isloggedIn,

@@ -23,7 +23,7 @@ module.exports.showListing = async (req, res) => {
     req.flash("error", "Listing you requested ror does not exist!");
     return res.redirect("/listings");
   }
-  res.render("listings/show.ejs", { listing });
+  return res.render("listings/show.ejs", { listing });
 };
 
 module.exports.createListing = async (req, res, next) => {
@@ -42,7 +42,7 @@ module.exports.renderEditForm = async (req, res) => {
   const listing = await Listing.findById(id);
   if (!listing) {
     req.flash("error", "Listing your requested for does not exist!");
-    res.redirect("/listings");
+    return res.redirect("/listings");
   }
   let originalImageUrl = listing.image.url;
   originalImageUrl = originalImageUrl.replace(
@@ -62,7 +62,7 @@ module.exports.updateListing = async (req, res) => {
     await listing.save();
   }
   req.flash("success", "Listing Updated!");
-  res.redirect(`/listings/${id}`);
+  res.redirect(`./listings/${id}`);
 };
 
 module.exports.destroyListing = async (req, res) => {
