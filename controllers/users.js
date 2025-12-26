@@ -88,11 +88,16 @@ module.exports.sendResetMail = async (req, res) => {
 
 // ===================== RESET FORM ==============================================
 module.exports.renderResetForm = async (req, res) => {
-  const { token } = req.params;
+  // const { token } = req.params;
+
+  // const user = await User.findOne({
+  //   resetPasswordToken: token,
+  //   resetPasswordExpire: { $gt: Date.now() },
+  // });
 
   const user = await User.findOne({
-    resetPasswordToken: token,
-    resetPasswordExpire: { $gt: Date.now() },
+    resetPasswordToken: req.params.token,
+    resetPasswordExpires: { $gt: Date.now() },
   });
 
   if (!user) {
