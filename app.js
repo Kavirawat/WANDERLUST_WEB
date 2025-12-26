@@ -89,6 +89,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/",wrapAsync(async(req,res,next)=>{
+    res.redirect('/listings');
+}));
+
 // ============ Searching filter ==============
 app.get("/search", async (req, res) => {
   const { q } = req.query;
