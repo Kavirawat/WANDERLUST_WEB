@@ -101,7 +101,7 @@ app.get("/search", async (req, res) => {
       ],
     });
     if (listings.length === 0) {
-      req.flash("error", "No listings found!");
+      req.flash("error", "No data found!");
       return res.redirect("/listings");
     }
     res.render("listings/index.ejs", { allListings: listings });
