@@ -13,6 +13,10 @@
   "author": "kavi rawat",
   "license": "ISC",
   "dependencies": {
+    "@mapbox/mapbox-gl-draw": "^1.5.1",
+    "@maptiler/client": "^2.6.0",
+    "@maptiler/geocoding-control": "^2.1.7",
+    "@maptiler/sdk": "^3.9.0",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^1.41.3",
     "connect-flash": "^0.1.1",

@@ -20,6 +20,7 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const Listing = require("./models/listing.js");
+const wrapAsync = require("./utils/wrapAsync.js");
 
 // console.log("APP FILE LOADED");
 
@@ -89,7 +90,15 @@ app.use((req, res, next) => {
   next();
 });
 
-// ============ Searching filter ==============
+// ======================== Redirect home page =====================
+app.get(
+  "/",
+  wrapAsync(async (req, res, next) => {
+    res.redirect("/listings");
+  })
+);
+
+// ============== Searching filter =======================
 app.get("/search", async (req, res) => {
   const { q } = req.query;
   try {
@@ -101,7 +110,7 @@ app.get("/search", async (req, res) => {
       ],
     });
     if (listings.length === 0) {
-      req.flash("error", "No listings found!");
+      req.flash("error", "No data found");
       return res.redirect("/listings");
     }
     res.render("listings/index.ejs", { allListings: listings });
@@ -111,6 +120,7 @@ app.get("/search", async (req, res) => {
   }
 });
 
+//==================== Reset token ========================
 app.get("/reset/:token", (req, res) => {
   res.render("users/reset-password", { token: req.params.token });
 });

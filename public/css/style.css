@@ -171,3 +171,8 @@ body {
     border-bottom: 1px solid #ebebeb;
   }
 }
+
+#map{
+  height: 300px;
+  width: 90vh;
+}

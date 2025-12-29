@@ -1,4 +1,10 @@
 <% layout("/layouts/boilerplate") %>
+<!-- ✅ Inject data from backend to frontend -->
+<script>
+  const mapToken = "<%= process.env.MAP_TOKEN %>";
+  const coordinates = '<%- JSON.stringify(listing.geometry.coordinates) %>';
+</script>
+
   <div class="row mt-3">
     <div class="col-8 offset-3">
       <h3>
@@ -93,5 +99,11 @@
                 </div>
               <% } %>
         </div>
+      <div class="col-8 offset-3 mb-4">
+        <h3 class="mb-3">Where you'll be</h3>
+        <div id="map"></div>
+      </div>
   </div>
-  </div>
+</div>
+<script src="/js/map.js"></script>
+ 
