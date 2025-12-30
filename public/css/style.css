@@ -176,3 +176,9 @@ body {
   height: 300px;
   width: 90vh;
 }
+
+@media (max-width: 767px) {
+  #map {
+    width: auto;
+  }
+}
