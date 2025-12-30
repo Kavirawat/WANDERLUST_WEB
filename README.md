@@ -15,7 +15,7 @@ Before you begin, make sure you have the following installed on your system:
 **1. Clone the Wanderlust repository from GitHub:**
 
    
-   git clone https://github.com/Kavirawat/WANDERLUST_WEB.git
+    git clone https://github.com/Kavirawat/WANDERLUST_WEB.git
    
 
 **2. Set up the database:**
@@ -23,7 +23,7 @@ Before you begin, make sure you have the following installed on your system:
    - Add the following line to the .env file:
 
      
-     ATLASDB_URL=mongodb://127.0.0.1:27017/wanderlust
+         ATLASDB_URL=mongodb://127.0.0.1:27017/wanderlust
      
 
 **3. Set up Cloudinary:**
@@ -32,34 +32,40 @@ Before you begin, make sure you have the following installed on your system:
    - Add these values to the .env file:
 
      
-     CLOUD_NAME=your_cloud_name
-     CLOUD_API_KEY=your_api_key
-     CLOUD_API_SECRET=your_api_secret
+         CLOUD_NAME=your_cloud_name
+         CLOUD_API_KEY=your_api_key
+         CLOUD_API_SECRET=your_api_secret
      
 
 **4. Set the secret for your Cloudinary storage:**
    - Add a SECRET key to your .env file and set it to a secure value:
 
      
-     SECRET=your_cloudinary_secret
+         SECRET=your_cloudinary_secret
+
+**5. Set the mapToken for your map features:**
+   - Add a SECRET key to your .env file and set it to a secure value:
+
+     
+         MAP_TOKEN=YOUR_map_token
      
 
-**5. Install project dependencies using npm:**
+**6. Install project dependencies using npm:**
 
    
    npm install
    
 
-**6. Run the application using Nodemon:**
+**7. Run the application using Nodemon:**
 
      nodemon app.js
 
-**7. Live Project : **
+**8. Live Project : **
 
 https://wanderlust-web-t0wx.onrender.com
 
    
-**8. Access the project:**
+**9. Access the project:**
    - Once the server is running, you can access the project at [http://localhost:8080](http://localhost:8080).
 
 That's it! You have successfully installed and set up the Wanderlust web project on your local machine. If you encounter any issues during the installation process, feel free to reach out for assistance. Happy traveling! 🌍✈️
