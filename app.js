@@ -95,7 +95,7 @@ app.get(
   "/",
   wrapAsync(async (req, res, next) => {
     res.redirect("/listings");
-  })
+  }),
 );
 
 // ============== Searching filter =======================
@@ -118,6 +118,21 @@ app.get("/search", async (req, res) => {
     req.flash("error", "Search failed!");
     res.redirect("/listings");
   }
+});
+
+//========================== Filter Category ==================
+app.get("/listings", async (req, res) => {
+  let { category } = req.query;
+  let allListings;
+
+  if (category) {
+    // Agar category filter select kiya hai
+    allListings = await Listing.find({ category: category });
+  } else {
+    // Agar koi filter nahi hai, saari listings dikhayein
+    allListings = await Listing.find({});
+  }
+  res.render("listings/index.ejs", { allListings });
 });
 
 //==================== Reset token ========================

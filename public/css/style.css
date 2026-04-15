@@ -137,6 +137,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  
 }
 
 .filter {
@@ -144,6 +145,8 @@ body {
   margin-right: 1.5rem;
   margin-top: 2rem;
   opacity: 0.7;
+  text-decoration: none;
+  color: rgb(122, 121, 120);
 }
 
 .filter:hover {
@@ -172,7 +175,13 @@ body {
   }
 }
 
-#map{
+#map {
   height: 300px;
   width: 90vh;
+}
+
+@media (max-width: 1467px) {
+  #map {
+    width: auto;
+  }
 }
