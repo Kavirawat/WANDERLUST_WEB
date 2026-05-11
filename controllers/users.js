@@ -65,11 +65,10 @@ module.exports.sendResetMail = async (req, res) => {
 
     const resetURL = `${req.protocol}://${req.get("host")}/reset/${token}`;
 
-    // API KEY setup yahan karein
     const SibApiV3Sdk = require("sib-api-v3-sdk");
     let defaultClient = SibApiV3Sdk.ApiClient.instance;
     let apiKey = defaultClient.authentications["api-key"];
-    apiKey.apiKey = process.env.EMAIL_PASS; // Render Dashboard wali API Key
+    apiKey.apiKey = process.env.EMAIL_PASS;
 
     const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
