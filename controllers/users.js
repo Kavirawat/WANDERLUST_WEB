@@ -1,6 +1,6 @@
 const User = require("../models/user.js");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
+// const nodemailer = require("nodemailer");
 
 // ======================== SIGNUP ==========================
 module.exports.renderSignUpForm = (req, res) => {
@@ -48,6 +48,13 @@ module.exports.renderForgotForm = (req, res) => {
   res.render("users/forgot.ejs");
 };
 
+const SibApiV3Sdk = require("sib-api-v3-sdk");
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
+
+//================== API Key configure karein =================
+const apiKey = defaultClient.authentications["api-key"];
+apiKey.apiKey = process.env.EMAIL_PASS;
+
 module.exports.sendResetMail = async (req, res) => {
   try {
     const { email } = req.body;
@@ -60,35 +67,35 @@ module.exports.sendResetMail = async (req, res) => {
 
     const token = crypto.randomBytes(32).toString("hex");
     user.resetPasswordToken = token;
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    user.resetPasswordExpires = Date.now() + 3600000;
     await user.save();
 
     const resetURL = `${req.protocol}://${req.get("host")}/reset/${token}`;
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp-relay.brevo.com",
-      port: 587,
-      secure: false, 
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    // Brevo API instance
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-    await transporter.sendMail({
-      to: user.email,
-      from: process.env.EMAIL_USER,
-      subject: "Wanderlust - Password Reset",
-      html: `<p>Click the link below to reset your password:</p>
-                   <p><a href="${resetURL}">${resetURL}</a></p>`,
-      text: `Reset your password: ${resetURL}`,
-    });
+    sendSmtpEmail.subject = "Wanderlust - Password Reset";
+    sendSmtpEmail.htmlContent = `<p>Click here to reset: <a href="${resetURL}">${resetURL}</a></p>`;
+    sendSmtpEmail.sender = {
+      name: "Wanderlust",
+      email: "kavirrawat896@gmail.com",
+    }; 
+    
+    //=============== verified sender email =====================
+    sendSmtpEmail.to = [{ email: user.email }];
+
+    await apiInstance.sendTransacEmail(sendSmtpEmail);
 
     req.flash("success", "Reset link sent to your email.");
     res.redirect("/login");
   } catch (err) {
-    console.error("ERROR IN SENDING MAIL:", err);
-    req.flash("error", "Something went wrong. Please try again later.");
+    console.error("BREVO API ERROR:", err);
+    req.flash(
+      "error",
+      "Failed to send email. Please check your Brevo settings.",
+    );
     res.redirect("/forgot");
   }
 };
