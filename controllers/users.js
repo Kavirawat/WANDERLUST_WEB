@@ -74,7 +74,7 @@ module.exports.sendResetMail = async (req, res) => {
     let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
     sendSmtpEmail = {
-      sender: { name: "Wanderlust", email: "kavirrawat896@gmail.com" }, // Verified Sender
+      sender: { name: "Wanderlust", email: "kavirrawat896@gmail.com" },
       to: [{ email: user.email }],
       subject: "Wanderlust - Password Reset",
       htmlContent: `<p>Click here to reset: <a href="${resetURL}">${resetURL}</a></p>`,
@@ -85,7 +85,6 @@ module.exports.sendResetMail = async (req, res) => {
     req.flash("success", "Reset link sent to your email.");
     res.redirect("/login");
   } catch (err) {
-    // Logs mein asli error dekhne ke liye ye console zaroori hai
     console.log("FULL ERROR DETAILS:", err.response ? err.response.text : err);
     req.flash(
       "error",
@@ -94,6 +93,7 @@ module.exports.sendResetMail = async (req, res) => {
     res.redirect("/forgot");
   }
 };
+
 // ===================== RESET FORM (GET) ===================
 module.exports.renderResetForm = async (req, res) => {
   const { token } = req.params;
