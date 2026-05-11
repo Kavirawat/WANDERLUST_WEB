@@ -48,13 +48,6 @@ module.exports.renderForgotForm = (req, res) => {
   res.render("users/forgot.ejs");
 };
 
-const SibApiV3Sdk = require("sib-api-v3-sdk");
-const defaultClient = SibApiV3Sdk.ApiClient.instance;
-
-//================== API Key configure karein =================
-const apiKey = defaultClient.authentications["api-key"];
-apiKey.apiKey = process.env.EMAIL_PASS;
-
 module.exports.sendResetMail = async (req, res) => {
   try {
     const { email } = req.body;
@@ -72,26 +65,29 @@ module.exports.sendResetMail = async (req, res) => {
 
     const resetURL = `${req.protocol}://${req.get("host")}/reset/${token}`;
 
-    // Brevo API instance
-    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    // API KEY setup yahan karein
+    const SibApiV3Sdk = require("sib-api-v3-sdk");
+    let defaultClient = SibApiV3Sdk.ApiClient.instance;
+    let apiKey = defaultClient.authentications["api-key"];
+    apiKey.apiKey = process.env.EMAIL_PASS; // Render Dashboard wali API Key
 
-    sendSmtpEmail.subject = "Wanderlust - Password Reset";
-    sendSmtpEmail.htmlContent = `<p>Click here to reset: <a href="${resetURL}">${resetURL}</a></p>`;
-    sendSmtpEmail.sender = {
-      name: "Wanderlust",
-      email: "kavirrawat896@gmail.com",
-    }; 
-    
-    //=============== verified sender email =====================
-    sendSmtpEmail.to = [{ email: user.email }];
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+    sendSmtpEmail = {
+      sender: { name: "Wanderlust", email: "kavirrawat896@gmail.com" }, // Verified Sender
+      to: [{ email: user.email }],
+      subject: "Wanderlust - Password Reset",
+      htmlContent: `<p>Click here to reset: <a href="${resetURL}">${resetURL}</a></p>`,
+    };
 
     await apiInstance.sendTransacEmail(sendSmtpEmail);
 
     req.flash("success", "Reset link sent to your email.");
     res.redirect("/login");
   } catch (err) {
-    console.error("BREVO API ERROR:", err);
+    // Logs mein asli error dekhne ke liye ye console zaroori hai
+    console.log("FULL ERROR DETAILS:", err.response ? err.response.text : err);
     req.flash(
       "error",
       "Failed to send email. Please check your Brevo settings.",
@@ -99,7 +95,6 @@ module.exports.sendResetMail = async (req, res) => {
     res.redirect("/forgot");
   }
 };
-
 // ===================== RESET FORM (GET) ===================
 module.exports.renderResetForm = async (req, res) => {
   const { token } = req.params;
