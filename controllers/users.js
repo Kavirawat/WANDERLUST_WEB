@@ -12,7 +12,6 @@ module.exports.signUp = async (req, res, next) => {
     const { username, email, password } = req.body;
     const newUser = new User({ username, email });
     const registeredUser = await User.register(newUser, password);
-
     req.login(registeredUser, (err) => {
       if (err) return next(err);
       req.flash("success", "Welcome to Wanderlust!");
@@ -43,60 +42,64 @@ module.exports.logOut = (req, res, next) => {
     res.redirect("/listings");
   });
 };
+
 //===================== FORGOT PASSWORD =====================
 module.exports.renderForgotForm = (req, res) => {
   res.render("users/forgot.ejs");
 };
 
 module.exports.sendResetMail = async (req, res) => {
-  const { email } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) {
-    req.flash("error", "No account with that email.");
-    return res.redirect("/forgot");
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      req.flash("error", "No account with that email.");
+      return res.redirect("/forgot");
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await user.save();
+
+    const resetURL = `${req.protocol}://${req.get("host")}/reset/${token}`;
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      connectionTimeout: 20000,
+      greetingTimeout: 20000,
+    });
+
+    await transporter.sendMail({
+      to: user.email,
+      from: process.env.EMAIL_USER,
+      subject: "Wanderlust - Password Reset",
+      html: `<p>Click the link below to reset your password:</p>
+                   <p><a href="${resetURL}">${resetURL}</a></p>`,
+      text: `Reset your password: ${resetURL}`,
+    });
+
+    req.flash("success", "Reset link sent to your email.");
+    res.redirect("/login");
+  } catch (err) {
+    console.error("ERROR IN SENDING MAIL:", err);
+    req.flash("error", "Something went wrong. Please try again later.");
+    res.redirect("/forgot");
   }
-
-  const token = crypto.randomBytes(32).toString("hex");
-  user.resetPasswordToken = token;
-  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-  await user.save();
-
-  const resetURL = `http://localhost:8080/reset/${token}`;
-
-  console.log("RESET URL =>", resetURL);
-
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  await transporter.sendMail({
-    to: user.email,
-    from: process.env.EMAIL_USER,
-    subject: "Password reset",
-    html: `<p>Click the link below to reset your password:</p>
-      <p><a href="${resetURL}">${resetURL}</a></p>`,
-    text: `Reset your password: ${resetURL}`,
-  });
-
-  req.flash("success", "Reset link sent to your email.");
-  res.redirect("/login");
 };
 
-// ===================== RESET FORM ==============================================
+// ===================== RESET FORM (GET) ===================
 module.exports.renderResetForm = async (req, res) => {
-  // const { token } = req.params;
-
-  // const user = await User.findOne({
-  //   resetPasswordToken: token,
-  //   resetPasswordExpire: { $gt: Date.now() },
-  // });
-
+  const { token } = req.params;
   const user = await User.findOne({
-    resetPasswordToken: req.params.token,
+    resetPasswordToken: token,
     resetPasswordExpires: { $gt: Date.now() },
   });
 
@@ -104,50 +107,34 @@ module.exports.renderResetForm = async (req, res) => {
     req.flash("error", "Token invalid or expired");
     return res.redirect("/forgot");
   }
-
-  res.render("users/reset-password.ejs", { token });
-};
-
-// ===================== RESET FORM (GET) ===================
-module.exports.renderResetForm = async (req, res) => {
-  const { token } = req.params;
-
-  const user = await User.findOne({
-    resetPasswordToken: token,
-    resetPasswordExpires: { $gt: Date.now() }, // Fixed: added 's'
-  });
-
-  if (!user) {
-    req.flash("error", "Token invalid or expired");
-    return res.redirect("/forgot");
-  }
-  // Pass token to the view so the form knows where to POST to
   res.render("users/reset-password.ejs", { token });
 };
 
 // ===================== RESET PASSWORD (POST) ==============
 module.exports.resetPassword = async (req, res) => {
-  const { token } = req.params;
-  const { password } = req.body;
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
 
-  const user = await User.findOne({
-    resetPasswordToken: token,
-    resetPasswordExpires: { $gt: Date.now() }, // Fixed: added 's'
-  });
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
 
-  if (!user) {
-    req.flash("error", "Token is invalid or expired.");
-    return res.redirect("/forgot");
+    if (!user) {
+      req.flash("error", "Token is invalid or expired.");
+      return res.redirect("/forgot");
+    }
+
+    await user.setPassword(password);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    req.flash("success", "Password reset successful. Please log in.");
+    res.redirect("/login");
+  } catch (e) {
+    req.flash("error", e.message);
+    res.redirect("/forgot");
   }
-
-  // passport-local-mongoose method to update password
-  await user.setPassword(password);
-
-  // Clear the reset fields
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpires = undefined;
-
-  await user.save();
-  req.flash("success", "Password reset successful. Please log in.");
-  res.redirect("/login");
 };
