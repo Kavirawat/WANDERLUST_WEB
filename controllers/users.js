@@ -111,18 +111,17 @@ module.exports.renderResetForm = async (req, res) => {
 // ===================== RESET FORM (GET) ===================
 module.exports.renderResetForm = async (req, res) => {
   const { token } = req.params;
-  // console.log("RESET ROUTE TOKEN:", token);
 
   const user = await User.findOne({
     resetPasswordToken: token,
-    resetPasswordExpire: { $gt: Date.now() },
+    resetPasswordExpires: { $gt: Date.now() }, // Fixed: added 's'
   });
 
   if (!user) {
     req.flash("error", "Token invalid or expired");
     return res.redirect("/forgot");
   }
-
+  // Pass token to the view so the form knows where to POST to
   res.render("users/reset-password.ejs", { token });
 };
 
@@ -133,7 +132,7 @@ module.exports.resetPassword = async (req, res) => {
 
   const user = await User.findOne({
     resetPasswordToken: token,
-    resetPasswordExpire: { $gt: Date.now() },
+    resetPasswordExpires: { $gt: Date.now() }, // Fixed: added 's'
   });
 
   if (!user) {
@@ -141,33 +140,14 @@ module.exports.resetPassword = async (req, res) => {
     return res.redirect("/forgot");
   }
 
+  // passport-local-mongoose method to update password
   await user.setPassword(password);
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpire = undefined;
-  await user.save();
 
+  // Clear the reset fields
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpires = undefined;
+
+  await user.save();
   req.flash("success", "Password reset successful. Please log in.");
   res.redirect("/login");
 };
-
-async function generateResetToken(userEmail) {
-  const user = await User.findOne({ email: userEmail });
-  if (!user) throw new Error("No user found with that email.");
-
-  // 1. Generate a plain-text random token to send to the user
-  const resetToken = crypto.randomBytes(32).toString("hex");
-
-  // 2. Hash the token to store in the database
-  const hashedToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
-
-  // 3. Save the hashed token and set an expiration (e.g., 1 hour)
-  user.resetPasswordToken = hashedToken;
-  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour in ms
-  await user.save();
-
-  // 4. Return the UNHASHED token to be sent in the email
-  return resetToken;
-}
