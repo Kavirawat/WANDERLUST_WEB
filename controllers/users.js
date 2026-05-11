@@ -94,7 +94,7 @@ module.exports.sendResetMail = async (req, res) => {
   }
 };
 
-// ===================== RESET FORM (GET) ===================
+//===================== RESET FORM (GET) ===================
 module.exports.renderResetForm = async (req, res) => {
   const { token } = req.params;
   const user = await User.findOne({

@@ -1,5 +1,4 @@
 <% layout("/layouts/boilerplate") %>
-<!-- ✅ Inject data from backend to frontend -->
 <script>
   const mapToken = "<%= process.env.MAP_TOKEN %>";
   const coordinates = <%- JSON.stringify(listing.geometry.coordinates) %>;
@@ -15,7 +14,7 @@
       <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="listing_image" />
       <div class="card-body">
         <p class="card-text"> <i>Owned by <b>
-              <%= listing.owner.username %>
+              <%= listing.owner ? listing.owner.username : "Unknown Owner" %>
             </b></i></p>
         <p class="card-text">
           <%= listing.description %>

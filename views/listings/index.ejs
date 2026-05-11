@@ -1,80 +1,69 @@
 <% layout("/layouts/boilerplate") %>
 
 <div id="filters">
-   <a href="/listings?category=Trending" class="filter">
-    <div class="filter">
+  <a href="/listings?category=Trending" class="filter">
       <div><i class="fa-solid fa-fire"></i></div>
       <p>Trending</p>
-    </div>
   </a>
 
   <a href="/listings?category=Rooms" class="filter">
-    <div class="filter">
       <div><i class="fa-solid fa-bed"></i></div>
       <p>Rooms</p>
-    </div>
   </a>
 
-<a href="/listings?category=IconicCities" class="filter">   
-   <div><i class="fa-solid fa-mountain-city"></i></div>
+  <a href="/listings?category=IconicCities" class="filter">
+    <div><i class="fa-solid fa-mountain-city"></i></div>
     <p>Iconic Cities</p>
-</a>
+  </a>
 
-<a href="/listings?category=Mountains" class="filter">   
-   <div><i class="fa-solid fa-mountain"></i></div>
+  <a href="/listings?category=Mountains" class="filter">
+    <div><i class="fa-solid fa-mountain"></i></div>
     <p>Mountains</p>
-</a>
+  </a>
 
-<a href="/listings?category=Castles" class="filter">    
-  <div><i class="fa-brands fa-fort-awesome"></i></div>
+  <a href="/listings?category=Castles" class="filter">
+    <div><i class="fa-brands fa-fort-awesome"></i></div>
     <p>Castles</p>
-</a>
-  
-<a href="/listings?category=AmazingPools" class="filter">   
-   <div><i class="fa-solid fa-person-swimming"></i></div>
-    <p>Amazing pools</p>
-</a>
+  </a>
 
-<a href="/listings?category=Camping" class="filter">  
+  <a href="/listings?category=AmazingPools" class="filter">
+    <div><i class="fa-solid fa-person-swimming"></i></div>
+    <p>Amazing pools</p>
+  </a>
+
+  <a href="/listings?category=Camping" class="filter">
     <div><i class="fa-solid fa-campground"></i></div>
     <p>Camping</p>
-</a>
+  </a>
 
-<a href="/listings?category=Farms" class="filter">  
+  <a href="/listings?category=Farms" class="filter">
     <div><i class="fa-solid fa-cow"></i></div>
     <p>Farms</p>
-</a>
+  </a>
 
 
-<a href="/listings?category=Arctic" class="filter">   
-   <div><i class="fa-regular fa-snowflake"></i></div>
+  <a href="/listings?category=Arctic" class="filter">
+    <div><i class="fa-regular fa-snowflake"></i></div>
     <p>Arctic</p>
-</a>
+  </a>
 
 
-<a href="/listings?category=Domes" class="filter">   
-   <div><i class="fa-solid fa-igloo"></i></div>
+  <a href="/listings?category=Domes" class="filter">
+    <div><i class="fa-solid fa-igloo"></i></div>
     <p>Domes</p>
-</a>
+  </a>
 
 
-<a href="/listings?category=boats" class="filter">   
-   <div><i class="fa-solid fa-ship"></i></div>
+  <a href="/listings?category=boats" class="filter">
+    <div><i class="fa-solid fa-ship"></i></div>
     <p>boats</p>
-</a>
+  </a>
 
 
   <div class="tax-toggle">
     <div class="form-check form-switch form-check-reverse">
-      <input
-        class="form-check-input"
-        type="checkbox"
-        role="switch"
-        id="switchCheckDefault"
-      />
-      <label class="form-check-label" for="switchCheckDefault"
-        >Display total after taxes</label
-      >
+      <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault" />
+      <label class="form-check-label" for="switchCheckDefault">Display total after taxes</label>
     </div>
   </div>
 </div>
@@ -83,12 +72,7 @@
   <% for(let listing of allListings){ %>
   <a class="listing-link" href="/listings/<%=listing.id%>">
     <div class="card col listings-card">
-      <img
-        src="<%= listing.image.url %>"
-        class="card-img-top"
-        alt="listings_image"
-        style="height: 20rem"
-      />
+      <img src="<%= listing.image.url %>" class="card-img-top" alt="listings_image" style="height: 20rem" />
       <div class="card-img-overlay"></div>
       <div class="card-body">
         <p class="card-text">
