@@ -96,26 +96,20 @@
 
 <script>
   function calculateGST(taxSwitch) {
+    alert("GST function chal raha hai");
 
     let prices = document.querySelectorAll(".price");
 
-    prices.forEach(function (price) {
-
+    prices.forEach(function(price) {
       let originalPrice = Number(price.dataset.price);
 
       if (taxSwitch.checked) {
-
-        let gstPrice = originalPrice * 1.18;
-
-        price.textContent = gstPrice.toLocaleString("en-IN");
-
+        price.textContent =
+          (originalPrice * 1.18).toLocaleString("en-IN");
       } else {
-
         price.textContent =
           originalPrice.toLocaleString("en-IN");
-
       }
-
     });
   }
 </script>
